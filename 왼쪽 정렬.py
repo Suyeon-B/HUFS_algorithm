@@ -21,11 +21,14 @@ while(True):
 	else:
 		if (len_words[i+1]>1) or (i+2 == len(words)):
 			penalties[j] = (W - len_one_line[j])**3
-			j+=1
-			i+=1
+			j += 1
+			i += 1
 			len_one_line[j] = len_words[i]
 			penalties[j] = (W - len_one_line[j])**3
+			j+=1
+			i+=1
 		else:
+			penalties[j] = (W - len_one_line[j]) ** 3
 			j += 1
 			len_one_line[j] += 1 + len_words[i + 1] + len_words[i + 2]
 			penalties[j] = (W - len_one_line[j]) ** 3
