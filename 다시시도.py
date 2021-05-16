@@ -8,7 +8,7 @@ dp = []
 for _ in range(1001):
 	line = []
 	for _ in range(1001):
-		line.append(-1)
+		line.append(0)
 	dp.append(line)
 
 for i in range(len(ch)):
@@ -24,29 +24,37 @@ for x in range(len(ch)):
     for y in range(len(ch)):
         if (x == y):
             if (x > 0):
-                dp[x][y] = (W - (psum[y] - psum[y-1] - 1)) ** 3
+                if (W - (psum[y] - psum[y - 1] - 1) >= 0):
+                    dp[x][y] = (W - (psum[y] - psum[y-1] - 1)) ** 3
             else:
-                dp[x][y] = (W - psum[y]) ** 3
+                if (W - psum[y] >= 0):
+                    dp[x][y] = (W - psum[y]) ** 3
         elif (x < y) :
             if (x > 0):
-                dp[x][y] = (W - (psum[y] - psum[x-1] - 1)) ** 3
+                if (W - (psum[y] - psum[x-1] - 1) >= 0):
+                    dp[x][y] = (W - (psum[y] - psum[x-1] - 1)) ** 3
             else:
-                dp[x][y] = (W - psum[y]) ** 3
-                continue
+                if (W - psum[y] >= 0):
+                    dp[x][y] = (W - psum[y]) ** 3
 
-result = 0
-x, y = 0, 0
-while (True):
-    if (x == len(ch)) and (y == len(ch)):
+i, j = len(ch)-1, len(ch)-1
+result = [0]*len(ch)
+while(True):
+    if i<0 or j<0:
         break
-    if (x <= y) and (dp[x][y] > 0):
-        if ((dp[x][y] > dp[x][y+1]) and (dp[x][y+1] > 0)):
-            result += dp[x][y+1]
-            x, y = y + 2, y + 2
+    if (dp[i][j] > dp[i-1][j]) or (dp[i][j] > dp[i - 2][j - 2] + dp[i - 1][j]):
+        result[i] = dp[i - 1][j]
+        if (dp[i][j] > dp[i-1][j]):
+            i -= 1
         else:
-            result += dp[x][y]
-            x, y = y+1, y+1
-    else:
-        continue
+            i -= 2
+            j = i
+    elif dp[i][j] < dp[i - 2][j - 2] + dp[i - 1][j]:
+        result[i] = dp[i][j]
+        i -= 1
+        j = i
 
-print(result)
+answer = 0
+for i in range(len(result)):
+    answer += result[i]
+print(answer)
