@@ -1,68 +1,61 @@
+import ctypes
 W = int(input())
-words = input().split()
-# code below
-len_words = [None] * len(words)
-for i in range(len(words)):
-	len_words[i] = len(words[i])
 
-# 1) w 내의 값이라면 최대한 붙여 쓴 경우
-len_one_line = [0] * len(words)
-len_one_line[0] = len(words[0])
-penalties = [0] * len(words)
+arr = [0] * 1001
+psum = [0] * 1001
 
-i = 0
-j = 0
-while(True):
-	if i+1 == len(words):
-		break
-	if ((len_one_line[j] + len_words[i+1] + 1 <= W) and (len_words[i+1]>1)):
-		len_one_line[j] += 1 + len_words[i+1]
+dp = []
+for _ in range(1001):
+	line = []
+	for _ in range(1001):
+		line.append(-1)
+	dp.append(line)
+
+def p(a, y):
+	x = 1
+	while(y):
+		#print(int(y) & 1)
+		if (int(y) & 1):
+			x *= a
+		a *= a
+		y /= 2
+	return x
+
+def recv(s, e):
+	if (s==e):
+		dp[s][e] = p((W - arr[s]), 3)
+		result = dp[s][e]
+		return result
+	ret = dp[s][e]
+	if (ret != -1):
+		return ret
+
+	s_len = e-s
+	w_len = psum[e] - psum[s-1]
+
+	if (s_len + w_len <= W):
+		ret = p(W - (s_len + w_len), 3)
+		return ret
+
+	ret = 1e9
+	i = s
+	while (i<e):
+		ret = min(ret, recv(s, i) + recv(i + 1, e))
 		i+=1
-	else:
-		if (len_words[i+1]>1) or (i+2 == len(words)):
-			penalties[j] = (W - len_one_line[j])**3
-			j += 1
-			i += 1
-			len_one_line[j] = len_words[i]
-			penalties[j] = (W - len_one_line[j])**3
-			j+=1
-			i+=1
-		else:
-			penalties[j] = (W - len_one_line[j]) ** 3
-			j += 1
-			len_one_line[j] += 1 + len_words[i + 1] + len_words[i + 2]
-			penalties[j] = (W - len_one_line[j]) ** 3
-			i += 2
-			j += 1
-'''
-panalty = 0
-for i in range(len(penalties)):
-	if penalties[i] == 0:
-		break
-	panalty += penalties[i]
+	return ret
 
-# 2) 한 줄에 표시할 단어의 조합이 (앞+) (+뒤) 중 패널티 값이 작은 것으로 택할 경우
-len_one_line = [0] * len(words)
-len_one_line[0] = len(words[0])
-penalties = [0] * len(words)
 
-i = 0
-j = 0
-while(True):
-	if i+1 == len(words):
-		break
-	# (+뒤)의 패널티 값이 작은 경우
-	if (j == 0) or (len_one_line[j] + 1 + len_words[i+1] > len_one_line[j+1] + ):
-		len_one_line[j] += 1 + len_words[i+1]
-	# (앞+)의 패널티 값이 작은 경우
+n = 1
+Len = 0
+ch = input().split()
 
-'''
+for i in range(len(ch)):
+	arr[i] = len(ch[i])
 
-panalty = 0
-for i in range(len(penalties)):
-	if penalties[i] == 0 and i != 0:
-		break
-	panalty += penalties[i]
+n = i
+for i in range(1, n):
+	psum[i] = psum[i-1] + arr[i]
+	i +=1
 
-# 결과 : 최소 penalty값
-print(panalty)
+answer = recv(1, n-1)
+print(answer)
