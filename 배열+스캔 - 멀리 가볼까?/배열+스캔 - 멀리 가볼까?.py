@@ -4,38 +4,25 @@
 # 반대의 경우라면 도달할 수 없다.
 
 def JUMP(A):
-    size = len(A)
-    zero = 0
-    zero_idx = []
-    for i in range(size):
-        if A[i] == 0:
-            zero += 1
-            zero_idx.append(i)
+    jump_coin = A[0]
+    start = 0
+    while True:
+        if jump_coin == len(A)-1:
+            return True
+        if A[start] == 0:
+            return False
 
-    temp = list(zero_idx)
-    for i in range(zero-1):
-        if temp[i]+1 == temp[i+1]:
-            zero_idx.pop(i)
-            zero -= 1
+        if A[jump_coin] == 0:
+            start += 1
+            jump_coin = A[start] + start
+        else:
+            start = A.index(A[jump_coin])
+            jump_coin += A[start]
+            continue
 
 
 
-    for i in range(zero):
-        count = zero_idx[i]
-        start = i
-        while True:
-            if A[start] <= zero_idx[i]-start:
-                if start+1 == size-1:
-                    return True
-                if count > 0 :
-                    count -= 1
-                    start += 1
-                    continue
-                else:
-                    return False
-            else:
-                break
-    return True
+
 
 
 
