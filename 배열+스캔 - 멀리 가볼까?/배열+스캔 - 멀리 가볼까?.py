@@ -1,205 +1,85 @@
-
-# 0을 기준으로 왼쪽 값들을 차례로 검사하여,
-# (모든 0에 대하여) 0의 왼쪽값들과 0의 인덱스 차이 < 해당 인덱스의 값 이면
-# Jump하여 끝까지 도달할 수 있고,
-# 반대의 경우라면 도달할 수 없다.
-
-def JUMP(A):
-    jump_coin = [A[0]]
-    start = 0
-    end_point = 0
-
-    while True:
-        if end_point >= len(A)-1:
-            return True
-        if A[0] == 0:
-            return False
-        #if A[2] != 0 and A[-4] != 0 and A[1] != 0:
-        #    return True
-
-        if A[jump_coin[-1]] == 0:
-            for i in range(jump_coin[-1]+1):
-                if start + jump_coin[0] >= len(A) - 1:
-                    return True
-                if start+jump_coin[0] < len(A) and A[start + jump_coin[0]] != 0 and jump_coin[0] != 0:
-                    start += jump_coin[0]
-                    end_point = start
-                    jump_coin.pop()
-                    if end_point < len(A) - 1:
-                        jump_coin.append(A[start]+start)
-                    break
-                else:
-                    start += 1
-                    end_point = start
-                    if A[start] == 0:
-                        jump_coin.append(0)
-                    if A[start] == 0 and jump_coin[0] == 0:
-                        return False
-                    if end_point < len(A) - 1:
-                        jump_coin.pop(0)
-                        jump_coin.insert(0, A[start])
-                    else:
-                        return False
-        else:
-            start += A[start]
-            end_point = start
-            if jump_coin[0] != 0:
-                jump_coin.pop()
-            else:
-                if A[start-1] == 0:
-                    return False
-                else:
-                    start -= 1
-                    end_point = start
-                    jump_coin.pop()
-                    jump_coin.append(A[start])
-                    continue
-            if end_point < len(A)-1:
-                jump_coin.append(A[start])
-            else:
-                return True
-            continue
-
-
 """
-# 0을 기준으로 왼쪽 값들을 차례로 검사하여,
-# (모든 0에 대하여) 0의 왼쪽값들과 0의 인덱스 차이 < 해당 인덱스의 값 이면
-# Jump하여 끝까지 도달할 수 있고,
-# 반대의 경우라면 도달할 수 없다.
-
-def JUMP(A):
-    jump_coin = [A[0]]
-    start = 0
-    end_point = 0
-
-    while True:
-        if end_point >= len(A)-1:
-            return True
-        if A[0] == 0:
-            return False
-
-
-        if A[jump_coin[-1]] == 0:
-            for i in range(jump_coin[-1]+1):
-                if start + jump_coin[0] == len(A) - 1:
-                    return True
-                if A[start + jump_coin[0]] != 0 and jump_coin[0] != 0:
-                    start += jump_coin[0]
-                    end_point = start
-                    jump_coin.pop()
-                    if end_point < len(A) - 1:
-                        jump_coin.append(A[start]+start)
-                    break
-                else:
-                    start += 1
-                    end_point = start
-                    if A[start] == 0:
-                        jump_coin.append(0)
-                    if A[start] == 0 and jump_coin[0] == 0:
-                        return False
-                    if end_point < len(A) - 1:
-                        jump_coin.pop(0)
-                        jump_coin.insert(0, A[start])
-                    else:
-                        return False
-        else:
-            start += A[start]
-            end_point = start
-            if jump_coin[0] != 0:
-                jump_coin.pop()
-            else:
-                return False
-            if end_point < len(A)-1:
-                jump_coin.append(A[start])
-            else:
-                return True
-            continue
-"""
-
-"""
-정답 코드
-
 <알고리즘 설명>
-A[0]부터 A[0] 값 만큼 jump_coin을 할당하고, 
-jump_coin 만큼 뛰어 A[i]로 도달하면 
-또 다시 jump_coin을 A[i]만큼 추가하여 누적 할당한다.
-이를 반복해서 끝까지 도달하는지 판단한다.
+아래 세 가지 함수를 구현하여 해결했습니다.
 
-jump_coin만큼 뛰었을 때 도달한 값이 0이라면,
-jump하지 말고 다음 인덱스로 넘어간다.
-다음 인덱스도 jump_coin만큼 뛰어서 0이라면 False를 출력한다.
+1. slice(A)
+: 리스트를 처음부터 하나씩 살피며 0이 나왔을 때,
+다음 수도 0이 아닌 경우에 해당 인덱스까지 잘라서
+temp 리스트에 저장하고 인덱스와 함께 리턴합니다.
 
-누적된 jump_coin으로 끝까지 도달할 수 있다면 True를 출력한다.
+2. JUMPABLE(A, temp, slice_idx)
+: 잘라진 temp 리스트의 요소를 뒤에서부터 확인해서,
+0을 넘길 수 있는 숫자들로 구성되어 있다면 True를,
+넘길 수 없다면 False를 리턴합니다.
+
+3. JUMP
+: 1, 2번 함수를 반복하면서
+리스트 A 끝까지 점프가 가능한지 판단하고 결과를 리턴합니다.
+
 
 <수행시간>
-리스트의 값을 건너뛰기도 하고, 최악의 경우에도 모든 값을 1번씩 거치므로
-총 O(n)만큼의 시간이면 구할 수 있다.
-
-def JUMP(A):
-    jump_coin = [A[0]]
-    start = 0
-    end_point = 0
-
-    while True:
-        if end_point >= len(A)-1:
-            return True
-        if A[0] == 0:
-            return False
-        if A[2] != 0 and A[-4] != 0 and A[1] != 0:
-            return True
-
-        if A[jump_coin[-1]] == 0:
-            for i in range(jump_coin[-1]+1):
-                if start + jump_coin[0] == len(A) - 1:
-                    return True
-                if A[start + jump_coin[0]] != 0 and jump_coin[0] != 0:
-                    start += jump_coin[0]
-                    end_point = start
-                    jump_coin.pop()
-                    if end_point < len(A) - 1:
-                        jump_coin.append(A[start]+start)
-                    break
-                else:
-                    start += 1
-                    end_point = start
-                    if A[start] == 0:
-                        jump_coin.append(0)
-                    if A[start] == 0 and jump_coin[0] == 0:
-                        return False
-                    if end_point < len(A) - 1:
-                        jump_coin.pop(0)
-                        jump_coin.insert(0, A[start])
-                    else:
-                        return False
-        else:
-            start += A[start]
-            end_point = start
-            if jump_coin[0] != 0:
-                jump_coin.pop()
-            else:
-                return False
-            if end_point < len(A)-1:
-                jump_coin.append(A[start])
-            else:
-                return True
-            continue
-
-
-
-
-
-
-
-A = [int(x) for x in input().split()]
-print(JUMP(A))
+한번씩 리스트의 원소들을 살펴보고 판단하므로,
+총 O(n)만큼의 시간이면 구할 수 있습니다.
+상세 표기는 아래 추가했습니다.
 
 """
 
+def slice(A):
+    temp = []
+    for i in range(len(A) - 1): # O(n) + O(c) = O(n) - c는 상수
+        if A[i] == 0 and A[i + 1] != 0: # 연속으로 0이 나온다면 맨 마지막 0까지 해서 자름
+            temp = A[:i+1]
+            slice_idx = i+1
+            return temp, slice_idx
+        else:
+            continue
+    if temp == []: # 만약 자를 곳이 없다면
+        temp = A[:]
+        slice_idx = len(A)  # O(c) - c는 상수
+        return temp, slice_idx # A를 복사해서 리턴
 
 
+def JUMPABLE(A, temp, slice_idx):
+    size = len(A) # O(c) - c는 상수
+    slice_size = len(temp) # O(c) - c는 상수
+    count = 0
+    for j in range(slice_size-2, 0, -1): # O(n) / 뒤에서 부터 0을 넘길 수 있는지 판단
+        if slice_size == size:  # 잘리지 않고 A 그대로 복사한 temp라면
+            if temp[j] >= count or slice_size == 1: # 최종적으로 0을 넘을 수 있거나, 넘을 필요가 없다면
+                return True # True
+            else:
+                slice_size -= 1
+                size -= 1
+                count += 1
+                continue
+        else:  # 잘려 온 파트이면
+            if temp[j] > slice_size-1: # 넘길 수 있다면 다음 잘린 조각으로 temp를 변경
+                temp = A[slice_idx:]
+                return temp
+            else:
+                slice_size -= 1
+                continue
+    return False
 
 
-
+def JUMP(A):
+    temp, slice_idx = slice(A)
+    result = JUMPABLE(A, temp, slice_idx)
+    while True:
+        if result == True:
+            return True
+        elif result == False:
+            return False
+        else: # 마지막까지 검사될 때 까지 반복한다.
+            temp, slice_idx_plus = slice(result)
+            if temp == result:
+                return True
+            slice_idx += slice_idx_plus
+            result = JUMPABLE(A, temp, slice_idx)
+            if result == False:
+                return True
+            if len(result) == 1:
+                return True
 
 A = [int(x) for x in input().split()]
 print(JUMP(A))
