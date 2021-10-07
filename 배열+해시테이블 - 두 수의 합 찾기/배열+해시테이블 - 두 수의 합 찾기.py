@@ -1,8 +1,3 @@
-"""
-해시테이블 사용
-n개의 수를 차례로 확인하며
-"""
-
 class HashOpenAddr:
     def __init__(self, size=10):
         self.size = size
@@ -68,9 +63,10 @@ class HashOpenAddr:
 
     def search(self, key):
         i = self.find_slot(key)
-        if self.keys[i] != None:  # key is in table
-            return self.keys[i]
-        else:
+        try:
+            if self.keys[i] != None:  # key is in table
+                return self.keys[i]
+        except:
             return None  # not found
 
     def __getitem__(self, key):
@@ -85,13 +81,18 @@ k = int(input())
 n = [int(x) for x in input().split()]
 size = len(n)
 count = 0
+zero_count = 0
 
 t = list(n)
-for i in range(len(n)):
+for i in range(size):
     H.set(n[i], k-n[i])
-    if H.search(n[i]): # 여기서
-    #if k-n[i] in t: # 타임아웃 잡아야함
+    if k == 0 and n[i] == 0:
+        zero_count+=1
+for i in range(size):
+    if H.search(k-n[i]):
         count += 1
 
-print(count//2)
+zero_count = zero_count//2
+count += zero_count
 
+print(count//2)
